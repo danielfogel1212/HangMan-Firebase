@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<!-- Coding By CodingNepal - www.codingnepalweb.com -->
+<html lang="en">
+<head>
+    <style>
+        /* Importing Google font - Open Sans */
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap");
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Open Sans", sans-serif;
+}
+body {
+    display: flex;
+    padding: 0 10px;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: #5E63BA;
+}
+.container {
+    display: flex;
+    width: 850px;
+    gap: 70px;
+    padding: 60px 40px;
+    background: #fff;
+    border-radius: 10px;
+    align-items: flex-end;
+    justify-content: space-between;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+.hangman-box img {
+    user-select: none;
+    max-width: 270px;
+}
+.hangman-box h1 {
+    font-size: 1.45rem;
+    text-align: center;
+    margin-top: 20px;
+    text-transform: uppercase;
+}
+.game-box .word-display {
+    gap: 10px;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+.word-display .letter {
+    width: 28px;
+    font-size: 2rem;
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: 40px;
+    text-transform: uppercase;
+    border-bottom: 3px solid #000;
+}
+.word-display .letter.guessed {
+    margin: -40px 0 35px;
+    border-color: transparent;
+}
+.game-box h4 {
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 15px;
+}
+.game-box h4 b {
+    font-weight: 600;
+}
+.game-box .guesses-text b {
+    color: #ff0000;
+}
+.game-box .keyboard {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin-top: 40px;
+    justify-content: center;
+}
+:where(.game-modal, .keyboard) button {
+    color: #fff;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 4px;
+    text-transform: uppercase;
+    background: #5E63BA;
+}
+.keyboard button {
+    padding: 7px;
+    width: calc(100% / 9 - 5px);
+}
+.keyboard button[disabled] {
+    pointer-events: none;
+    opacity: 0.6;
+}
+:where(.game-modal, .keyboard) button:hover {
+    background: #8286c9;
+}
+.game-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    pointer-events: none;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 0 10px;
+    transition: opacity 0.4s ease;
+}
+.game-modal.show {
+    opacity: 1;
+    pointer-events: auto;
+    transition: opacity 0.4s 0.4s ease;
+}
+.game-modal .content {
+    padding: 30px;
+    max-width: 420px;
+    width: 100%;
+    border-radius: 10px;
+    background: #fff;
+    text-align: center;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+.game-modal img {
+    max-width: 130px;
+    margin-bottom: 20px;
+}
+.game-modal img[src="images/victory.gif"] {
+    margin-left: -10px;
+}
+.game-modal h4 {
+    font-size: 1.53rem;
+}
+.game-modal p {
+    font-size: 1.15rem;
+    margin: 15px 0 30px;
+    font-weight: 500;
+}
+.game-modal p b {
+    color: #5E63BA;
+    font-weight: 600;
+}
+.game-modal button {
+    padding: 12px 23px;
+}
+
+@media (max-width: 782px) {
+    .container {
+        flex-direction: column;
+        padding: 30px 15px;
+        align-items: center;
+    }
+    .hangman-box img {
+        max-width: 200px;
+    }
+    .hangman-box h1 {
+        display: none;
+    }
+    .game-box h4 {
+        font-size: 1rem;
+    }
+    .word-display .letter {
+        margin-bottom: 35px;
+        font-size: 1.7rem;
+    }
+    .word-display .letter.guessed {
+        margin: -35px 0 25px;
+    }
+    .game-modal img {
+        max-width: 120px;
+    }
+    .game-modal h4 {
+        font-size: 1.45rem;
+    }
+    .game-modal p {
+        font-size: 1.1rem;
+    }
+    .game-modal button {
+        padding: 10px 18px;
+    }
+}
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="style.css">
+    <!-- <script src="scripts/word-list.js" defer></script>
+    <script src="scripts/script.js" defer></script> -->
+</head>
+<body style="direction: rtl">
+    <div class="game-modal">
+        <div class="content">
+            <img src="#" alt="gif">
+            <h4>משחק נגמר!</h4>
+            <p>המילה הנכונה הייתה: <b>rainbow</b></p>
+            <button class="play-again">שחק שוב</button>
+        </div>
+    </div>
+    <div class="container">
+        <div class="hangman-box">
+            <img src="#" draggable="false" alt="hangman-img">
+            <h1>איש תלוי</h1>
+        </div>
+        <div class="game-box">
+            <ul class="word-display"></ul>
+            <h4 class="hint-text">רמז: <b></b></h4>
+            <h4 class="guesses-text">תשובות לא נכונות: <b></b></h4>
+            <div class="keyboard"></div>
+        </div>
+    </div>
+    <script type="module">
+   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.4/firebase-app.js";
+import { getFirestore, where, collection, addDoc, getDoc, query, serverTimestamp ,limitToLast, orderBy, limit, startAfter, startAt, endAt, onSnapshot, doc, getDocs, deleteField, updateDoc, deleteDoc, setDoc } from 'https://www.gstatic.com/firebasejs/9.9.4/firebase-firestore.js';
+import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.9.4/firebase-auth.js";
+import { getDatabase, ref, set, onValue, onDisconnect } from "https://www.gstatic.com/firebasejs/9.9.4/firebase-database.js";
+
+        const firebaseConfig = {
+  apiKey: "AIzaSyB87m7IcXd1gqnSYZEBXqwpQIQbOItRwqY",
+  authDomain: "todos-e7e2f.firebaseapp.com",
+  databaseURL: "https://todos-e7e2f-default-rtdb.firebaseio.com",
+  projectId: "todos-e7e2f",
+  storageBucket: "todos-e7e2f.appspot.com",
+  messagingSenderId: "523425205783",
+  appId: "1:523425205783:web:6fd93bb6f354c361541652"
+};
+const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+const wordDisplay = document.querySelector(".word-display");
+const guessesText = document.querySelector(".guesses-text b");
+const keyboardDiv = document.querySelector(".keyboard");
+const hangmanImage = document.querySelector(".hangman-box img");
+const gameModal = document.querySelector(".game-modal");
+const playAgainBtn = gameModal.querySelector("button");
+
+let uid
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+   
+     uid = user.uid;
+    const name= user.email
+
+    // addS(name,0)
+
+    // document.getElementById('usersList').innerHTML=name
+    // ...
+  } else {
+    // window.location.href="login.html"
+    // ...
+  }
+});
+function getIdFromUrl(url) {
+  const urlObject = new URL(url);
+  const urlParams = new URLSearchParams(urlObject.search);
+  const id = urlParams.get('gameid');
+  return id;
+}
+const currentUrl = window.location.href;
+console.log(currentUrl);
+
+let extractedId = getIdFromUrl(currentUrl);
+console.log(extractedId);
+
+// Example usage
+
+
+// Initializing game variables
+let currentWord,currentWord1, correctLetters, wrongGuessCount, correctLetters1,button;
+const maxGuesses = 6;
+let sum=0
+
+const resetGame = () => {
+    sum=sum+1
+         
+    if(sum>1){
+        console.log("yay")
+    }
+    else{
+   
+        correctLetters = [];
+        correctLetters1 = []
+     
+    wrongGuessCount = 0;
+    count(wrongGuessCount)
+//  correctIndices1 = [];
+    hangmanImage.src = "images/hangman-0.svg";
+    guessesText.innerText = `${wrongGuessCount} / ${maxGuesses}`;
+    wordDisplay.innerHTML = currentWord.split("").map(() => `<li class="letter"></li>`).join("");
+    keyboardDiv.querySelectorAll("button").forEach(btn => btn.disabled = true);
+    gameModal.classList.remove("show");
+     updatedLetter1()
+     show()
+
+     
+    }
+    // Ressetting game variables and UI elements
+
+}
+const getRandomWord = () => {
+    const query1 = query(collection(db, "showQ"),where("uid","==","CM2hghQ3sRRGkMPRNmEtcPgQeoN2"));
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
+// Snapshot Listener
+
+const unsubscribe13 = onSnapshot(query1, (querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+         let data32 = doc.data();
+        console.log(data32)
+        currentWord = data32.mainQ; 
+        document.querySelector(".hint-text b").innerText =data32.q1;
+    })
+    resetGame();
+})
+    // Selecting a random word and hint from the wordList
+   // const { word, hint } = wordList[Math.floor(Math.random() * wordList.length)];
+// Making currentWord as random word
+
+    
+}
+
+
+const gameOver = async (isVictory) => {
+    // After game complete.. showing modal with relevant details
+    const modalText = isVictory ? 'מצאתה מילה את המילה הנכונה' : 'המילה הנכונה הייתה:';
+    gameModal.querySelector("img").src = `images/${isVictory ? 'victory' : 'lost'}.gif`;
+    gameModal.querySelector("h4").innerText = isVictory ? 'ברכות!' : 'משחק נגמר!';
+    gameModal.querySelector("p").innerHTML = `${modalText} <b>${currentWord}</b>`;
+    gameModal.classList.add("show");
+    function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+await sleep(4000)
+    location.reload();
+}
+
+
+const count = async (wrongGuessCount) => {
+  const docRef = doc(db, "showQ","CM2hghQ3sRRGkMPRNmEtcPgQeoN2");
+
+  try {
+    await updateDoc(docRef, {
+     
+      score:     wrongGuessCount
+    });
+ } catch (error) {
+    console.error("Error updating document:", error);
+  }
+};
+   const updatedLetter = async (letter,index) => {
+  const docRef = doc(db, "showQ","CM2hghQ3sRRGkMPRNmEtcPgQeoN2");
+
+  try {
+    await updateDoc(docRef, {
+     
+      letter:letter,
+      index:index
+    }); 
+  } catch (error) {
+    console.error("Error updating document:", error);
+  }
+};
+const updatedLetter1 = async () => {
+  const docRef = doc(db, "showQ","CM2hghQ3sRRGkMPRNmEtcPgQeoN2");
+
+  try {
+    await updateDoc(docRef, {
+     
+      letter:'',
+      index:'',
+      color:''
+    }); 
+  
+
+
+
+    //   hangmanImage.src = `images/hangman-${updatedData.score}.svg`;
+    //   guessesText.innerText = `${updatedData.score} / ${maxGuesses}`;
+    
+  } catch (error) {
+    console.error("Error updating document:", error);
+  }
+};
+
+// const initGame = (button, clickedLetter) => {
+
+//     // Checking if clickedLetter exists in the currentWord
+//     if (currentWord.includes(clickedLetter)) {
+
+//         // Showing all correct letters on the word display
+//         [...currentWord].forEach((letter, index) => {
+         
+//             if (letter === clickedLetter) 
+//             {
+                
+                   
+                    
+//                   updatedLetter(letter,index)
+         
+//                 correctLetters.push(letter);
+//                 wordDisplay.querySelectorAll("li")[index].innerText = letter;
+//                 wordDisplay.querySelectorAll("li")[index].classList.add("guessed");
+              
+//             }
+//         });
+//     } else {
+//         wrongGuessCount++;
+//         count(wrongGuessCount);
+//     }
+
+    
+
+    // if (wrongGuessCount === maxGuesses) {
+    //     return gameOver(false);
+    // }
+
+    // if (correctLetters.length === currentWord.length) {
+    //     return gameOver(true);
+    
+    // }
+// };
+
+for (let i = 1488; i <= 1514; i++) {
+   button = document.createElement("button");
+  const index = i - 1488; // Adjst the index to start from 0
+  button.innerText = String.fromCharCode(i);
+  button.setAttribute("id", index); // Set a unique data-index attribute
+  keyboardDiv.appendChild(button);
+
+  button.addEventListener("click", createButtonClickListener(index));
+}
+var x1 =0
+async function show() {
+  const query123 = query(collection(db, "showQ"), where("uid", "==", "CM2hghQ3sRRGkMPRNmEtcPgQeoN2"));
+  const unsubscribe12 = onSnapshot(query123, (querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+      let data = doc.data();
+
+      for (var x1 = 0; x1 < 24; x1++) {
+        let button = document.getElementById(x1).innerHTML;
+        console.log(button);
+        console.log(data.color[x1]);
+
+        if (data.color.includes(button)) {
+          let button1 = document.getElementById(x1);
+          button1.style.backgroundColor = "red";
+        }
+      }
+      console.log(data.score)
+
+      if (data.letter) {
+        correctLetters1.push(data.letter);
+
+        wordDisplay.querySelectorAll("li")[data.index].innerText = data.letter;
+        wordDisplay.querySelectorAll("li")[data.index].classList.add("guessed");
+      }
+        if (data.score === maxGuesses) {
+        return gameOver(false);
+    }
+
+    else if (correctLetters1.length-1 === currentWord.length+1) {
+      
+        return gameOver(true);
+        
+    }
+
+      
+    });
+    
+  });
+}
+
+
+
+function createButtonClickListener(index) {
+  return function (e) {
+    console.log("Button Clicked:", String.fromCharCode(index));
+    console.log("Button Index:", e.target.getAttribute("data-index"));
+    initGame(e.target, String.fromCharCode(index));
+    e.target.style.backgroundColor = "red";
+    e.target.disabled = true; // Disable the clicked button
+  };
+}
+
+
+function changeColor(event) {
+  console.log(this.event);
+}
+
+
+// Creating keyboard buttons and adding event listeners
+
+// Firestore Query
+
+// Snapshot Listener
+
+
+const query1 = query(collection(db, "showQ"),where("uid","==","CM2hghQ3sRRGkMPRNmEtcPgQeoN2"));
+const unsubscribe = onSnapshot(query1, (querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+     let data1 = doc.data();
+     
+         
+      hangmanImage.src = `images/hangman-${data1.score}.svg`;
+     guessesText.innerText = `${data1.score} / ${maxGuesses}`;
+       
+    })
+ 
+})
+
+getRandomWord();
+playAgainBtn.addEventListener("click", getRandomWord);
+
+    </script>
+</body>
+</html>
